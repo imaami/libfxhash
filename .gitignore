@@ -1,0 +1,10 @@
+*.creator.user
+*.d
+*.o
+*.so
+/.qtc_clangd
+/.vscode
+/Cargo.lock
+/fxhash-rs
+/target/
+fxhash-c
