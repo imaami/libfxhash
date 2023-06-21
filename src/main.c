@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "fxhash/fxhash.h"
+#include "fxhash.h"
 
 #if UINTPTR_MAX == UINT64_MAX
 # define FMT_PAD "%016"
