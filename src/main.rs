@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
-extern crate fxhash;
 
-use fxhash::FxHasher;
+extern crate rustc_hash;
+
+use rustc_hash::FxHasher;
 use std::env;
 use std::hash::Hasher;
 

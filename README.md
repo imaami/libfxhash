@@ -1,3 +1,3 @@
 # libfxhash
 
-A C implementation of [FxHash](https://github.com/cbreeden/fxhash)'s default hashing method.
+A C implementation of [rustc-hash](https://github.com/rust-lang/rustc-hash).
