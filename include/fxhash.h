@@ -1,4 +1,7 @@
 // SPDX-License-Identifier: MIT
+/** @file
+ * @brief Header-only C implementation of the rustc-hash algorithm.
+ */
 #ifndef FXHASH_H_
 #define FXHASH_H_
 
@@ -37,13 +40,13 @@ extern "C" {
 
 #if UINTPTR_MAX == UINT64_MAX
 # define unpack_uptr unpack_u64
-# define K           (STD uintptr_t)0x517cc1b727220a95ul
+# define K           (STD uint64_t)(UINT64_MAX / 3.141592653589793238462643383279502884L + .5)
 # ifdef __clang__
 #  define ROL5(x)    __builtin_rotateleft64((x), 5)
 # endif // __clang__
 #elif UINTPTR_MAX == UINT32_MAX
 # define unpack_uptr unpack_u32
-# define K           (STD uintptr_t)0x9e3779b9ul
+# define K           (STD uint32_t)(UINT32_MAX / 1.618033988749894848204586834365 + .5)
 # ifdef __clang__
 #  define ROL5(x)    __builtin_rotateleft32((x), 5)
 # endif // __clang__
@@ -55,8 +58,41 @@ extern "C" {
 # define ROL5(x) (((x) << 5) | ((x) >> ((sizeof(x) * CHAR_BIT) - 5u)))
 #endif // ROL5
 
+/**
+ * @brief Mix a value into the hash.
+ *
+ * This macro mixes an input value into the hash by left-rotating the
+ * current hash, performing a bitwise XOR of the rotated hash and the
+ * input, and finally multiplying the result by the constant @ref K.
+ *
+ * The hash is assumed to be a @c uintptr_t, the input value is cast
+ * to a @c uintptr_t before being mixed into the hash, and the value
+ * of @ref K depends on `sizeof(uintptr_t)`.
+ *
+ * @param h_ The current hash value. Should be a @c uintptr_t.
+ * @param v_ The value to mix in. Should be an integral type.
+ *
+ * @return The updated hash value.
+ */
 #define fxhash_add(h_, v_) ((ROL5(h_) ^ (STD uintptr_t)(v_)) * K)
 
+/**
+ * @brief Calculate the hash value of a byte array.
+ *
+ * This function calculates the hash value of a byte array using the
+ * fxhash algorithm, specifically the same implementation as rustc.
+ *
+ * @warning This function only supports little-endian and big-endian
+ * systems. Sorry, PDP-11 enthusiasts!
+ *
+ * @param data A pointer to the byte array.
+ * @param size The size of the byte array in bytes.
+ * @return The hash value of the byte array.
+ *
+ * @see fxhash_add
+ * @see unpack_uptr
+ */
+static inline uintptr_t fxhash(unsigned char const* data, size_t size);
 __attribute__((always_inline))
 static inline STD uintptr_t fxhash (unsigned char const *data,
                                     STD size_t           size)

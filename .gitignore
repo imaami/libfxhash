@@ -5,6 +5,8 @@
 /.qtc_clangd
 /.vscode
 /Cargo.lock
+/doc/html/
+/doc/latex/
 /fxhash-rs
 /target/
 fxhash-c
