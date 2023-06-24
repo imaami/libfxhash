@@ -6,6 +6,8 @@ override BIN_SRC := main.c
 override LIB_SRC := fxhash.c
 override BIN_OBJ := $(BIN_SRC:%=%.o)
 override LIB_OBJ := $(LIB_SRC:%=%.o)
+override BIN_CDB := $(BIN_OBJ:%=.%.json)
+override LIB_CDB := $(LIB_OBJ:%=.%.json)
 
 override DEP := $(BIN_SRC:%=%.d) $(LIB_SRC:%=%.d)
 
@@ -37,17 +39,29 @@ all: $(BIN) $(LIB)
 
 $(BIN): $(BIN_OBJ)
 	$(CC) $(CFLAGS) -o $@ $^
+	$(if $(USE_CLANG),@+$(MAKE) .$(BIN).json)
 
 $(LIB) $(LIB_OBJ): override CFLAGS := $(LIB_CFLAGS)
 
 $(LIB): $(LIB_OBJ)
 	$(CC) $(CFLAGS) -shared -o $@ $^
+	$(if $(USE_CLANG),@+$(MAKE) .$(LIB).json)
 
 %.c.o: %.c
-	$(CC) $(CFLAGS) -o $@ -c -I. -I../include -MMD -MQ $@ -MF $<.d $<
+	$(CC) $(CFLAGS) -o $@ -c -I. -I../include -MMD -MQ $@ -MF $<.d$(if $(USE_CLANG), -MJ .$@.json) $<
+
+ifdef USE_CLANG
+.%.o.json: | %.o; @:
+
+.$(BIN).json: $(BIN_CDB)
+.$(LIB).json: $(LIB_CDB)
+.$(BIN).json \
+.$(LIB).json \
+	:; cat $^ > $@
+endif
 
 -include $(DEP)
 
 .PHONY: all clean
 clean:
-	$(RM) $(BIN) $(LIB) $(BIN_OBJ) $(LIB_OBJ) $(DEP)
+	$(RM) $(BIN) $(LIB) $(BIN_OBJ) $(LIB_OBJ) $(BIN_CDB) $(LIB_CDB) $(DEP)

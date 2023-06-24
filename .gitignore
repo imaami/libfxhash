@@ -1,5 +1,6 @@
 *.creator.user
 *.d
+*.json
 *.o
 *.so
 /.qtc_clangd
