@@ -92,7 +92,6 @@ extern "C" {
  * @see fxhash_add
  * @see unpack_uptr
  */
-static inline uintptr_t fxhash(unsigned char const* data, size_t size);
 __attribute__((always_inline))
 static inline STD uintptr_t fxhash (unsigned char const *data,
                                     STD size_t           size)
